@@ -1,4 +1,4 @@
-// public/app.js — logika dashboard (fetch + Chart.js + polling 5 detik)
+
  
 const API = '';                 // kosong = origin yang sama (server Express)
 const REFRESH_MS = 5000;
@@ -92,14 +92,49 @@ function renderLatest(r) {
  
   // Status perangkat
   const online = t && (Date.now() - t.getTime()) / 1000 < OFFLINE_AFTER_S;
-  setStatus(!!online);
+  lastDataTime = t;
+  setStatus(!!online, 'device');
 }
  
-function setStatus(online) {
+let lastDataTime = null; // waktu data terakhir yang pernah diterima
+ 
+function timeAgo(d) {
+  const s = Math.max(0, Math.round((Date.now() - d.getTime()) / 1000));
+  if (s < 60) return s + ' detik lalu';
+  if (s < 3600) return Math.floor(s / 60) + ' menit lalu';
+  if (s < 86400) return Math.floor(s / 3600) + ' jam lalu';
+  return Math.floor(s / 86400) + ' hari lalu';
+}
+ 
+const OFFLINE_MSG = {
+  device: ['Perangkat offline',
+           'Tidak ada data masuk lebih dari 30 detik. Simulasi Wokwi kemungkinan tidak berjalan: buka Wokwi lalu klik tombol Start (hijau).'],
+  empty:  ['Belum ada data',
+           'Database masih kosong. Jalankan simulasi Wokwi agar data pertama masuk.'],
+  server: ['Tidak dapat terhubung ke server',
+           'Pastikan node server.js (dan ngrok jika memakai Wokwi) masih berjalan.'],
+};
+ 
+function updateLastSeen() {
+  $('lastSeen').textContent = lastDataTime
+    ? `${fmtTime(lastDataTime)} (${timeAgo(lastDataTime)})`
+    : 'Belum ada';
+}
+ 
+function setStatus(online, reason = 'device') {
   const el = $('deviceStatus');
   el.classList.toggle('online', online);
   el.classList.toggle('offline', !online);
   $('deviceStatusText').textContent = online ? 'Online' : 'Offline';
+ 
+  document.body.classList.toggle('is-offline', !online);
+  $('offlineBanner').hidden = online;
+  if (!online) {
+    const [title, desc] = OFFLINE_MSG[reason] || OFFLINE_MSG.device;
+    $('offlineTitle').textContent = title;
+    $('offlineDesc').textContent = desc;
+    updateLastSeen();
+  }
 }
  
 function renderChart(rows) {
@@ -150,7 +185,7 @@ async function refresh() {
         getJSON('/api/readings/latest').catch(() => null), // 404 = belum ada data
         getJSON('/api/readings?limit=20'),
       ]);
-      if (!latest) setStatus(false);
+      if (!latest) setStatus(false, 'empty');
       try { stats = await getJSON('/api/stats'); } catch (_) { /* opsional */ }
     }
  
@@ -163,9 +198,15 @@ async function refresh() {
     renderStats(stats);
   } catch (err) {
     console.error('Gagal mengambil data:', err);
-    setStatus(false);
+    setStatus(false, 'server');
   }
 }
  
 refresh();
 setInterval(refresh, REFRESH_MS);
+ 
+// Perbarui keterangan "x detik lalu" tiap detik saat offline
+setInterval(() => {
+  if (document.body.classList.contains('is-offline')) updateLastSeen();
+}, 1000);
+ 
