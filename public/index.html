@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greenhouse Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.2-6.5"/></svg>
+        </div>
+        <div>
+          <h1>Greenhouse Monitor</h1>
+          <p>Pemantauan suhu &amp; kelembapan real-time</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="device-chip">
+          <span class="chip-label">Perangkat</span>
+          <span id="deviceId" class="chip-value">GH-01</span>
+        </div>
+        <div id="deviceStatus" class="status-pill offline">
+          <span class="dot"></span>
+          <span id="deviceStatusText">Offline</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Kartu nilai -->
+    <section class="cards">
+      <article id="cardSuhu" class="card value-card normal">
+        <div class="card-head">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></svg>
+          </div>
+          <span class="card-title">Suhu Terkini</span>
+          <span id="suhuBadge" class="badge">Normal</span>
+        </div>
+        <div class="big-value"><span id="suhuValue">--</span><small>°C</small></div>
+        <div class="card-foot">Diperbarui: <span id="suhuTime">--:--:--</span></div>
+      </article>
+
+      <article class="card value-card humid">
+        <div class="card-head">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7c-4 4.5-6 7.7-6 10.3a6 6 0 0 0 12 0c0-2.6-2-5.8-6-10.3z"/></svg>
+          </div>
+          <span class="card-title">Kelembapan Terkini</span>
+        </div>
+        <div class="big-value"><span id="humValue">--</span><small>%</small></div>
+        <div class="progress"><div id="humBar" class="progress-bar"></div></div>
+        <div class="card-foot">Diperbarui: <span id="humTime">--:--:--</span></div>
+      </article>
+
+      <article class="card stats-card">
+        <div class="card-head">
+          <span class="card-title">Statistik</span>
+        </div>
+        <table class="stats-table">
+          <thead>
+            <tr><th></th><th>Rata-rata</th><th>Min</th><th>Maks</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Suhu (°C)</td>
+              <td id="sAvgSuhu">--</td><td id="sMinSuhu">--</td><td id="sMaxSuhu">--</td>
+            </tr>
+            <tr>
+              <td>Lembap (%)</td>
+              <td id="sAvgHum">--</td><td id="sMinHum">--</td><td id="sMaxHum">--</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <!-- Grafik -->
+    <section class="card chart-card">
+      <div class="card-head">
+        <span class="card-title">Grafik 20 Data Terakhir</span>
+        <span class="refresh-note"><span class="pulse"></span>Auto refresh 5 detik</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="readingsChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Tabel -->
+    <section class="card table-card">
+      <div class="card-head">
+        <span class="card-title">Riwayat 10 Data Terakhir</span>
+      </div>
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Perangkat</th>
+              <th>Suhu (°C)</th>
+              <th>Kelembapan (%)</th>
+              <th>Waktu</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="5" class="empty">Menunggu data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">Tugas Praktikum WS Sistem Tertanam &middot; Web Monitoring IoT</footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
