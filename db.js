@@ -1,19 +1,16 @@
 const Database = require('better-sqlite3');
 
-// Membuka/membuat database SQLite
-const db = new Database('monitoringSuhudanKelembapan.db');
-
-// Mengaktifkan WAL mode untuk performa yang lebih baik (opsional)
+const db = new Database('database.db');
 db.pragma('journal_mode = WAL');
 
-// Membuat tabel readings jika belum ada
+// Membuat tabel readings sesuai spesifikasi 3.1
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS readings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    temperature REAL NOT NULL,
-    humidity REAL NOT NULL,
-    status TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    device_id TEXT NOT NULL,
+    suhu REAL NOT NULL,
+    kelembapan REAL NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
   )
 `;
 
