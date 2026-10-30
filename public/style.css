@@ -192,6 +192,42 @@ body {
 }
 .pulse { color: var(--green); }
  
+/* Banner offline */
+.offline-banner {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px; margin-bottom: 20px;
+  background: var(--red-soft);
+  border: 1px solid rgba(239, 68, 68, .35);
+  border-radius: var(--radius);
+  animation: slideIn .35s ease;
+}
+.offline-banner[hidden] { display: none; }
+.offline-icon {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: rgba(239, 68, 68, .18); color: var(--red);
+}
+.offline-icon svg { width: 24px; height: 24px; }
+.offline-text { flex: 1; }
+.offline-text strong { color: var(--red); font-size: .98rem; }
+.offline-text p { font-size: .85rem; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+.offline-last { display: flex; flex-direction: column; text-align: right; }
+ 
+/* Tampilan meredup saat offline */
+body.is-offline .value-card { border-color: var(--surface-border); box-shadow: none; }
+body.is-offline .value-card .icon-box { background: rgba(255, 255, 255, .06); color: var(--muted); }
+body.is-offline .value-card .badge { background: rgba(255, 255, 255, .08); color: var(--muted); }
+body.is-offline .value-card .big-value > span { color: var(--muted); }
+body.is-offline .progress-bar { background: #5b6579; }
+body.is-offline .chart-wrap { opacity: .55; filter: grayscale(.7); }
+body.is-offline .refresh-note .pulse { background: var(--muted); animation: none; }
+ 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+ 
 /* Responsive */
 @media (max-width: 900px) {
   .cards { grid-template-columns: 1fr 1fr; }
@@ -202,4 +238,7 @@ body {
   .stats-card { grid-column: auto; }
   .big-value { font-size: 2.8rem; }
   .chart-wrap { height: 280px; }
+  .offline-banner { flex-wrap: wrap; }
+  .offline-last { text-align: left; }
 }
+ 
